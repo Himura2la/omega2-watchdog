@@ -11,7 +11,7 @@ class Omega2(object):
         # https://docs.onion.io/omega2-docs/gpio-python-module.html
         self._gpio_method = ['shell', 'python'][0]
         # https://docs.onion.io/omega2-docs/using-gpios.html#fast-gpio
-        self._gpio_tool = ['gpioctl', 'fast-gpio'][0]
+        self._gpio_tool = ['gpioctl', 'fast-gpio'][1]
 
 	self.RGB_pins = {'R': '17', 'G': '16', 'B': '15'}
 	for _, pin in self.RGB_pins.items():
@@ -55,10 +55,10 @@ class Omega2(object):
                     open(self.led_path + 'delay', 'w').write(morse_speed)
             return open(path, 'r').read()
 
-    def RGB_control(self, color, state):
-        pin = self.RGB_pins[color]
-	if self.gpio_set(pin, not state):
-            return not self.gpio_get(pin)
+    def RGB_control(self, red, green, blue):
+	gpio_pwm(self.RGB_pins['R'], red)
+	gpio_pwm(self.RGB_pins['G'], green)
+	gpio_pwm(self.RGB_pins['B'], blue)
 	
     def gpio_dir_in(self, pin):
         """Set pin direction to INPUT and don't care about logical level"""
@@ -138,5 +138,13 @@ class Omega2(object):
                 arg1, arg2 = str(pin), str(int(value))
             return not subprocess.call(
                 " ".join([self._gpio_tool, arg1, arg2]), shell=True)
+        elif self._gpio_method == 'python':
+            pass
+
+    def gpio_pwm(self, pin, duty_cycle_percent):
+        if self._gpio_method == 'shell':
+            return not subprocess.call(" ".join([
+		    'fast-gpio', 'pwm', str(pin), '8000', 
+		    str(duty_cycle_percent)]), shell=True)
         elif self._gpio_method == 'python':
             pass
