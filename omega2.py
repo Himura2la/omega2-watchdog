@@ -56,9 +56,9 @@ class Omega2(object):
             return open(path, 'r').read()
 
     def RGB_control(self, red, green, blue):
-	gpio_pwm(self.RGB_pins['R'], red)
-	gpio_pwm(self.RGB_pins['G'], green)
-	gpio_pwm(self.RGB_pins['B'], blue)
+	self.gpio_pwm(self.RGB_pins['R'], red)
+	self.gpio_pwm(self.RGB_pins['G'], green)
+	self.gpio_pwm(self.RGB_pins['B'], blue)
 	
     def gpio_dir_in(self, pin):
         """Set pin direction to INPUT and don't care about logical level"""
