@@ -32,10 +32,13 @@ def router_is_dead():
 def check_router():
     if not ping("ya.ru", 1):
         router_notice()
+
         if not ping("google.com", 10):
             router_warning()
+
             if not ping("8.8.8.8", 10):
                 router_is_dead()
+
                 return False
     o2.RGB_color(0, 0, 0)
     print("Router OK")
