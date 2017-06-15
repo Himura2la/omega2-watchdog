@@ -6,7 +6,7 @@ o2 = omega2.Omega2()
 
 def ping(host, waiting_time):
     try:
-        ping_ret = str(subprocess.check_output(["ping", host, "-c", "1", "-W", str(waiting_time)]))
+        ping_ret = str(subprocess.check_output(["ping", host, "-c", "1", "-W", str(waiting_time)], shell=True))
         return bool(ping_ret.split("packets transmitted,", 1)[-1].split(" received,", 1)[0])
     except subprocess.CalledProcessError:
         return False
@@ -46,14 +46,22 @@ def check_router():
 
 def server_ping(host, waiting_time):
     try:
-        ret = str(subprocess.check_output(["/root/server-run", "ping", host, "-c", "1", "-W", str(waiting_time)]))
+        ret = str(subprocess.check_output(["/root/server-run", "ping", host, "-c", "1", "-W", str(waiting_time)], shell=True))
         return bool(ret.split("packets transmitted,", 1)[-1].split(" received,", 1)[0])
     except subprocess.CalledProcessError:
         return False
 
 def check_server():
     if not server_ping("ya.ru", 1):
-        print("Server is Dead")
+        print("Server Warning")
+        time.sleep(120)
+        if not server_ping("8.8.8.8", 10):
+            print("Server is Dead. Rebooting")
+            try:
+                subprocess.call("/root/server-run sudo reboot", shell=True)
+            except subprocess.CalledProcessError:
+                pass
+            time.sleep(120)
     else:
         print("Server OK")
 
