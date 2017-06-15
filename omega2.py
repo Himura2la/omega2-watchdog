@@ -56,9 +56,13 @@ class Omega2(object):
             return open(path, 'r').read()
 
     def RGB_control(self, red, green, blue):
-	self.gpio_pwm(self.RGB_pins['R'], red)
-	self.gpio_pwm(self.RGB_pins['G'], green)
-	self.gpio_pwm(self.RGB_pins['B'], blue)
+	def set(color, val):
+	    if val >= 100: self.gpio_set(self.RGB_pins[color], 0)
+	    if val <= 0: self.gpio_set(self.RGB_pins[color], 1)
+	    if 0 < val < 100: self.gpio_pwm(self.RGB_pins[color], 100-val)
+	set('R', red)
+	set('G', green)
+	set('B', blue)   
 	
     def gpio_dir_in(self, pin):
         """Set pin direction to INPUT and don't care about logical level"""
@@ -144,7 +148,7 @@ class Omega2(object):
     def gpio_pwm(self, pin, duty_cycle_percent):
         if self._gpio_method == 'shell':
             return not subprocess.call(" ".join([
-		    'fast-gpio', 'pwm', str(pin), '8000', 
+		    'fast-gpio', 'pwm', str(pin), '1000', 
 		    str(duty_cycle_percent)]), shell=True)
         elif self._gpio_method == 'python':
             pass
