@@ -18,9 +18,11 @@ class Omega2(object):
         else:
             return subprocess.call(" ".join(cmd_args), shell=True)
 
-    def get_omega_version(self):
+    @staticmethod
+    def get_omega_version():
         """Returns 'omega2' for Omega2 and 'omega2p' for Omega2+"""
-        return self._shell(["uci", "get", "system.@led[0].sysfs"], True).split(":")[0]
+        cmd = "uci get system.@led[0].sysfs"
+        return str(subprocess.check_output(cmd, shell=True)).split(":")[0]
 
     def led_control(self, state, delay_on=None, delay_off=None,
                     message=None, morse_speed=None):
@@ -120,5 +122,5 @@ class Omega2(object):
 
     def gpio_pwm(self, pin, duty_cycle_percent):
         """Sends PWM on a pin"""
-        return not self._shell(['fast-gpio', 'pwm', str(pin), '1000', 
+        return not self._shell(['fast-gpio', 'pwm', str(pin), '1000',
                                 str(duty_cycle_percent)])
