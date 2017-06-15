@@ -46,7 +46,7 @@ def check_router():
 
 def server_ping(host, waiting_time):
     try:
-        ret = str(subprocess.check_output(["./server-run", "ping", host, "-c", "1", "-W", str(waiting_time)]))
+        ret = str(subprocess.check_output(["/root/server-run", "ping", host, "-c", "1", "-W", str(waiting_time)]))
         return bool(ret.split("packets transmitted,", 1)[-1].split(" received,", 1)[0])
     except subprocess.CalledProcessError:
         return False
