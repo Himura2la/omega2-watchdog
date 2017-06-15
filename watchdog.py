@@ -44,8 +44,23 @@ def check_router():
     print("Router OK")
     return True
 
+def server_ping(host, waiting_time):
+    try:
+        ret = str(subprocess.check_output(["./server-run", "ping", host, "-c", "1", "-W", str(waiting_time)]))
+        return bool(ret.split("packets transmitted,", 1)[-1].split(" received,", 1)[0])
+    except subprocess.CalledProcessError:
+        return False
+
+def check_server():
+    if not server_ping("ya.ru", 1):
+        print("Server is Dead")
+    else:
+        print("Server OK")
 
 while True:
-    time.sleep(5 * 60)
+    time.sleep(5)
     check_router()
+
+    time.sleep(5)
+    check_server()
 
