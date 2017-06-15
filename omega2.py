@@ -73,8 +73,8 @@ class Omega2(object):
 
     def gpio_dir_in(self, pin):
         """Set pin direction to INPUT and don't care about logical level"""
-        command = 'dirin' if self._gpio_tool == 'gpioctl' else 'set-input'
-        return not self._shell([self._gpio_tool, command, str(pin)])
+        method = 'dirin' if self._gpio_tool == 'gpioctl' else 'set-input'
+        return not self._shell([self._gpio_tool, method, str(pin)])
 
     def gpio_dir_in_0(self, pin):
         """Set pin direction to INPUT and keep LOW logical level"""
@@ -86,9 +86,8 @@ class Omega2(object):
 
     def gpio_dir_out(self, pin):
         """Set pin direction to OUTPUT and don't care about logical level"""
-        command = 'dirout' if self._gpio_tool == 'gpioctl' \
-            else 'set-output'
-        return not self._shell([self._gpio_tool, command, str(pin)])
+        method = 'dirout' if self._gpio_tool == 'gpioctl' else 'set-output'
+        return not self._shell([self._gpio_tool, method, str(pin)])
 
     def gpio_dir_out_0(self, pin):
         """Set pin direction to OUTPUT and keep LOW logical level"""
@@ -100,8 +99,8 @@ class Omega2(object):
 
     def gpio_get(self, pin):
         """Get the logical level on the pin"""
-        command = 'get' if self._gpio_tool == 'gpioctl' else 'read'
-        output = self._shell([self._gpio_tool, command, str(pin)], True)
+        method = 'get' if self._gpio_tool == 'gpioctl' else 'read'
+        output = self._shell([self._gpio_tool, method, str(pin)], True)
 
         if self._gpio_tool == 'gpioctl':
             return True if 'HIGH' in output else \
@@ -116,9 +115,11 @@ class Omega2(object):
         """Set the pin's logical level to value"""
         if self._gpio_tool == 'gpioctl':
             arg1, arg2 = 'set' if value else 'clear', str(pin)
+            command = [self._gpio_tool, arg1, arg2]
         else:
-            arg1, arg2 = str(pin), str(int(value))
-        return not self._shell([self._gpio_tool, arg1, arg2])
+            method, arg1, arg2 = "set", str(pin), str(int(value))
+            command = [self._gpio_tool, method, arg1, arg2]
+        return not self._shell(command)
 
     def gpio_pwm(self, pin, duty_cycle_percent):
         """Sends PWM on a pin"""
