@@ -7,7 +7,7 @@ o2 = omega2.Omega2()
 def ping(host, waiting_time):
     try:
         cmd = ' '.join(["ping", host, "-c", "1", "-W", str(waiting_time)])
-        print '[CALL] ' + cmd
+        print('[CALL] ' + cmd)
         ping_ret = str(subprocess.check_output(cmd, shell=True))
         return bool(ping_ret.split("packets transmitted,", 1)[-1].split(" received,", 1)[0])
     except subprocess.CalledProcessError:
@@ -48,7 +48,9 @@ def check_router():
 
 def server_ping(host, waiting_time):
     try:
-        ret = str(subprocess.check_output(["/root/server-run", "ping", host, "-c", "1", "-W", str(waiting_time)], shell=True))
+        cmd = ' '.join(["/root/server-run", "ping", host, "-c", "1", "-W", str(waiting_time)])
+        print('[REMOTE CALL] ' + cmd)
+        ret = str(subprocess.check_output(cmd, shell=True))
         return bool(ret.split("packets transmitted,", 1)[-1].split(" received,", 1)[0])
     except subprocess.CalledProcessError:
         return False
