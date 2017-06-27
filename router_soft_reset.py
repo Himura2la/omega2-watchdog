@@ -19,10 +19,10 @@ def tn_exit():
     tn.write('exit\n')
     tn.close()
 
-tn.read_until("Login: ", 10)
-tn.write("admin\n")
-tn.read_until("Password: ", 10)
-tn.write("\n")  # You have not seen this.
+tn.read_until('Login: ', 10)
+tn.write('admin\n')
+tn.read_until('Password: ', 10)
+tn.write(open('/root/router_pwd').read())
 
 module = tn.read_until('> ', 10)
 if module:
