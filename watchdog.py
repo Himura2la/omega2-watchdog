@@ -1,8 +1,55 @@
 import subprocess
 import time
 import omega2
+import telnetlib
+
+def router_soft_reset():
+	try:
+		tn = telnetlib.Telnet('192.168.1.1', timeout=10)
+		print '[INFO] Connected!'
+		
+	
+		def check_output(cmd):
+		    print "[INFO] Sending '" + cmd + "'"
+		    tn.write(cmd + '\n')
+		    tn.read_until('> ', 10)  # Inpit
+		    r = tn.read_until('> ', 10)  # Output
+		    if r:
+		        r = r.split('\n', 1)
+		        if len(r) > 1:
+		            return r[1]
+	
+	
+		def tn_exit():
+		    print '[INFO] Exitting...'
+		    tn.write('exit\n')
+		    tn.close()
+		
+		tn.read_until('Login: ', 10)
+		tn.write('admin\n')
+		tn.read_until('Password: ', 10)
+		tn.write(open('/root/router_pwd').read())
+		
+		module = tn.read_until('> ', 10)
+		if module:
+		    print '[INFO] Logged in: ' + module.split('\n', 1)[1]
+		    tn.read_very_eager()
+		
+		    print '[INFO] Rebooting!'
+		    tn.write('system reboot\n')
+		    return True
+		return False
+	except:
+		return False
 
 o2 = omega2.Omega2()
+
+
+def router_hard_reset():
+	o2.gpio_set(1, 0)
+	time.sleep(5)
+	o2.gpio_set(1, 1)
+
 
 def ping(host, waiting_time):
     try:
