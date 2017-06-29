@@ -9,8 +9,8 @@ class Server(object):
     def soft_reboot(self):
         self.i.warning('Soft reboot requested!')
         try:
-            subprocess.call(self.remote_run_path + " sudo reboot", shell=True)
-            return True
+            success = not subprocess.call(self.remote_run_path + " sudo reboot", shell=True)
+            return success
         except subprocess.CalledProcessError:
             self.i.crytical('Reboot failed!')
             return False

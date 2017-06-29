@@ -6,17 +6,18 @@ from router import Router
 from server import Server
 from tester import Tester
 
+i = Informer()
+i.info('Lock and Load!')
 
 o2 = omega2.Omega2()
-i = Informer()
 r = Router('192.168.1.1', 1, lambda: open('/root/router_pwd').read())
 s = Server("/root/server-run")
 t = Tester(s)
 
 def wifi_reconnect():
     subprocess.call("wifi", shell=True)
-    i.notice("Waiting 20s for link to raise...")
-    time.sleep(20)
+    i.notice("Waiting 10s for link to raise...")
+    time.sleep(10)
 
 def router_notice():
     i.notice("Router's connection failed once. Waiting 30s...")
@@ -35,8 +36,8 @@ def router_is_dead():
     i.warning("Connection is Dead. Trying to reboot...")
     if not r.soft_reboot():
         r.hard_reboot()
-    i.warning("Waiting 2m for router to reboot...")
-    time.sleep(120)
+    i.warning("Waiting 1m for router to reboot...")
+    time.sleep(60)
     wifi_reconnect()
 
 def check_router():
@@ -62,7 +63,8 @@ def server_warning():
 def server_is_dead():
     i.warning("Server's connection still fails. Trying to reboot.")
     if s.soft_reboot():
-        time.sleep(240)
+        i.warning("Waiting 3m for server to reboot...")
+        time.sleep(60 * 3)
     else:
         i.crytical("Server is badly dead and needs a hard reset.")
 

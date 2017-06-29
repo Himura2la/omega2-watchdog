@@ -17,9 +17,9 @@ class Informer(object):
         print(msg)
 
     def warning(self, msg):
-        msg = self._add_meta_info('! WARNING !', msg)
+        msg = self._add_meta_info('! WARNING', msg)
         print(msg)
 
     def crytical(self, msg):
-        msg = self._add_meta_info('!!! CRYTICAL !!!', msg)
+        msg = self._add_meta_info('!!! CRYTICAL', msg)
         print(msg)
