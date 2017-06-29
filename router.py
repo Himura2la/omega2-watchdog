@@ -49,8 +49,8 @@ class Router(object):
             return False
 
     def hard_reboot(self):
-        self.i.warning('Hard reboot requested!')
+        self.i.warning('Hard reboot requested! Powering down.')
         self.o2.gpio_set(self.relay_pin, 0)
         time.sleep(5)
         self.o2.gpio_set(self.relay_pin, 1)
-        self.i.crytical('Rebooting (hope so)!')
+        self.i.crytical('Powered up. Router is rebooting (hope so)!')

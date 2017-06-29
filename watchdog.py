@@ -18,8 +18,8 @@ FULL_CHECK_INTERVAL = 10  # seconds
 
 def wifi_reconnect():
     subprocess.call("wifi", shell=True)
-    i.notice("Waiting 10s for link to raise...")
-    time.sleep(10)
+    i.notice("Waiting 5s for link to raise...")
+    time.sleep(5)
 
 def router_notice():
     i.notice("Router's connection failed once. Waiting 30s...")
@@ -44,7 +44,7 @@ def router_is_dead():
     wifi_reconnect()
 
 def check_router():
-    if not t.ping("ya.ru", 1):
+    if not t.ping("ya.ru", 3):
         router_notice()
         if not t.ping("google.com", 10):
             router_warning()
@@ -72,7 +72,7 @@ def server_is_dead():
         i.crytical("Server is badly dead and needs a hard reset... Giving up.")
 
 def check_server():
-    if not t.remote_ping("ya.ru", 1):
+    if not t.remote_ping("ya.ru", 3):
         server_warning()
         if not t.remote_ping("8.8.8.8", 10):
             server_is_dead()
