@@ -44,7 +44,8 @@ class Router(object):
                 self.i.crytical('Rebooting!')
                 return True
             return False
-        except:
+        except Exception as e:
+            self.i.warning("Exception: " + str(e))
             return False
 
     def hard_reboot(self):

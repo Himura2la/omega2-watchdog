@@ -14,6 +14,8 @@ r = Router('192.168.1.1', 1, lambda: open('/root/router_pwd').read())
 s = Server("/root/server-run")
 t = Tester(s)
 
+FULL_CHECK_INTERVAL = 10  # seconds
+
 def wifi_reconnect():
     subprocess.call("wifi", shell=True)
     i.notice("Waiting 10s for link to raise...")
@@ -26,15 +28,16 @@ def router_notice():
     wifi_reconnect()
 
 def router_warning():
-    i.notice("Router 's connection failed twice. Waiting 2m...")
+    i.notice("Router's connection failed twice. Waiting 2m...")
     o2.RGB_color(100, 1, 0) # Yellow
-    time.sleep(120)
+    time.sleep(60 * 2)
     wifi_reconnect()
 
 def router_is_dead():
     o2.RGB_color(100, 0, 0)
     i.warning("Connection is Dead. Trying to reboot...")
     if not r.soft_reboot():
+        i.warning("Soft reboot failed!")
         r.hard_reboot()
     i.warning("Waiting 1m for router to reboot...")
     time.sleep(60)
@@ -66,7 +69,7 @@ def server_is_dead():
         i.warning("Waiting 3m for server to reboot...")
         time.sleep(60 * 3)
     else:
-        i.crytical("Server is badly dead and needs a hard reset.")
+        i.crytical("Server is badly dead and needs a hard reset... Giving up.")
 
 def check_server():
     if not t.remote_ping("ya.ru", 1):
@@ -79,7 +82,7 @@ def check_server():
         return True
 
 while True:
-    time.sleep(5)
+    time.sleep(FULL_CHECK_INTERVAL // 2)
     if check_router():
-        time.sleep(5)
+        time.sleep(FULL_CHECK_INTERVAL // 2)
         check_server()
