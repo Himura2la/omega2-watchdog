@@ -15,14 +15,14 @@ t = Tester(s)
 
 
 def router_notice():
-    i.notice("Router does not respond once")
+    i.notice("Router's connection failed once")
     o2.RGB_color(0, 0, 100)
     time.sleep(30)
     subprocess.call("wifi", shell=True)
     time.sleep(10)
 
 def router_warning():
-    i.notice("Router does not respond twice")
+    i.notice("Router 's connection failed twice")
     o2.RGB_color(100, 1, 0) # Yellow
     time.sleep(120)
     subprocess.call("wifi", shell=True)
@@ -30,10 +30,11 @@ def router_warning():
 
 def router_is_dead():
     o2.RGB_color(100, 0, 0)
-    i.warning("Router is Dead. Trying to reboot.")
+    i.warning("Connection is Dead. Trying to reboot.")
     if not r.soft_reboot():
         r.hard_reboot()
     time.sleep(120)
+    subprocess.call("wifi", shell=True)
 
 def check_router():
     if not t.ping("ya.ru", 1):
