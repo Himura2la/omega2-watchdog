@@ -9,20 +9,20 @@ from tester import Tester
 
 o2 = omega2.Omega2()
 i = Informer()
-r = Router('192.168.1.1', 1)
+r = Router('192.168.1.1', 1, lambda: open('/root/router_pwd').read())
 s = Server("/root/server-run")
 t = Tester(s)
 
 
 def router_notice():
-    print("Router Notice")
+    i.notice("Router does not respond once")
     o2.RGB_color(0, 0, 100)
     time.sleep(30)
     subprocess.call("wifi", shell=True)
     time.sleep(10)
 
 def router_warning():
-    print("Router Warning")
+    i.notice("Router does not respond twice")
     o2.RGB_color(100, 1, 0) # Yellow
     time.sleep(120)
     subprocess.call("wifi", shell=True)
@@ -30,7 +30,7 @@ def router_warning():
 
 def router_is_dead():
     o2.RGB_color(100, 0, 0)
-    print("Router is Dead")
+    i.warning("Router is Dead. Trying to reboot.")
     if not r.soft_reboot():
         r.hard_reboot()
     time.sleep(120)
@@ -47,18 +47,18 @@ def check_router():
 
                 return False
     o2.RGB_color(0, 0, 0)
-    print("Router OK")
+    i.info("Router OK")
     return True
 
 # ------------------------------------------
 
 def server_warning():
-    print("Server Warning")
+    i.notice("Server's connection fails")
     time.sleep(60)
     check_router()
 
 def server_is_dead():
-    print("Server is Dead. Rebooting")
+    i.warning("Server's connection still fails. Trying to reboot.")
     s.soft_reboot()
     time.sleep(240)
 
@@ -68,7 +68,7 @@ def check_server():
         if not t.remote_ping("8.8.8.8", 10):
             server_is_dead()
     else:
-        print("Server OK")
+        i.info("Server OK")
 
 while True:
     time.sleep(5)

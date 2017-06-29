@@ -4,11 +4,22 @@ import omega2
 from informer import Informer
 
 class Router(object):
-    def __init__(self, ip, relay_pin):
+    def __init__(self, ip, relay_pin, pwd_func):
         self.i = Informer('Router')
         self.relay_pin = relay_pin
         self.ip = ip
         self.o2 = omega2.Omega2()
+        self.get_pwd = pwd_func
+
+    def _check_output(self, tn, cmd):
+        self.i.info("Sending '" + cmd + "'")
+        tn.write(cmd + '\n')
+        tn.read_until('> ', 10)  # Inpit
+        ret = tn.read_until('> ', 10)  # Output
+        if ret:
+            ret = ret.split('\n', 1)
+            if len(ret) > 1:
+                return ret[1]
 
     def soft_reboot(self):
         self.i.warning('Soft reboot requested!')
@@ -16,20 +27,10 @@ class Router(object):
             tn = telnetlib.Telnet(self.ip, timeout=10)
             self.i.info('Connected to router')
 
-            def check_output(cmd):
-                self.i.info("Sending '" + cmd + "'")
-                tn.write(cmd + '\n')
-                tn.read_until('> ', 10)  # Inpit
-                ret = tn.read_until('> ', 10)  # Output
-                if ret:
-                    ret = ret.split('\n', 1)
-                    if len(ret) > 1:
-                        return ret[1]
-
             tn.read_until('Login: ', 10)
             tn.write('admin\n')
             tn.read_until('Password: ', 10)
-            tn.write(open('/root/router_pwd').read())
+            tn.write(self.get_pwd())
 
             module = tn.read_until('> ', 10)
             if module:
