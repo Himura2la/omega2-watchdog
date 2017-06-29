@@ -5,8 +5,8 @@ class Informer(object):
         self.module = module
 
     def _add_meta_info(self, level, msg):
-        msg_type = '[%s>%s]' % (level, self.module) if self.module else'[%s]' % level
-        return "[%s|%s] %s" % (strftime("%d.%m %H:%M:%S", localtime()), msg_type, msg)
+        msg_type = '%s>%s' % (level, self.module) if self.module else level
+        return "[%s|%s] %s" % (msg_type, strftime("%d.%m|%H:%M:%S", localtime()), msg)
 
     def info(self, msg):
         msg = self._add_meta_info('INFO', msg)
