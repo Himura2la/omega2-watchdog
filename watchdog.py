@@ -6,6 +6,9 @@ from router import Router
 from server import Server
 from tester import Tester
 
+FULL_CHECK_INTERVAL = 60 * 10  # seconds
+OK_ACTIONS = False
+
 i = Informer()
 i.info('Lock and Load!')
 
@@ -14,7 +17,7 @@ r = Router('192.168.1.1', 1, lambda: open('/root/router_pwd').read())
 s = Server("/root/server-run")
 t = Tester(s)
 
-FULL_CHECK_INTERVAL = 10  # seconds
+o2.RGB_color(0, 0, 0)
 
 def wifi_reconnect():
     subprocess.call("wifi", shell=True)
@@ -51,8 +54,9 @@ def check_router():
             if not t.ping("8.8.8.8", 10):
                 router_is_dead()
                 return False
-    o2.RGB_color(0, 0, 0)
-    i.info("Router OK")
+    if OK_ACTIONS:
+        o2.RGB_color(0, 0, 0)
+        i.info("Router OK")
     return True
 
 # ------------------------------------------
@@ -78,7 +82,8 @@ def check_server():
             server_is_dead()
             return False
     else:
-        i.info("Server OK")
+        if OK_ACTIONS:
+            i.info("Server OK")
         return True
 
 while True:
