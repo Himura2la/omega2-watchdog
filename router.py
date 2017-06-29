@@ -8,7 +8,10 @@ class Router(object):
         self.i = Informer('Router')
         self.relay_pin = relay_pin
         self.ip = ip
-        self.o2 = omega2.Omega2()
+        try:
+            self.o2 = omega2.Omega2()
+        except:
+            self.o2 = None
         self.get_pwd = pwd_func
 
     def _check_output(self, tn, cmd):
@@ -25,7 +28,7 @@ class Router(object):
         self.i.warning('Soft reboot requested!')
         try:
             tn = telnetlib.Telnet(self.ip, timeout=10)
-            self.i.info('Connected to router')
+            self.i.info('Connected via telnet')
 
             tn.read_until('Login: ', 10)
             tn.write('admin\n')
