@@ -6,8 +6,7 @@ from router import Router
 from server import Server
 from tester import Tester
 
-FULL_CHECK_INTERVAL = 60 * 10  # seconds
-OK_ACTIONS = False
+FULL_CHECK_INTERVAL = 60 * 30  # seconds
 
 i = Informer()
 i.info('Lock and Load!')
@@ -54,9 +53,8 @@ def check_router():
             if not t.ping("8.8.8.8", 10):
                 router_is_dead()
                 return False
-    if OK_ACTIONS:
-        o2.RGB_color(0, 0, 0)
-        i.info("Router OK")
+    i.ok("Router")
+    o2.RGB_color(0, 0, 0)
     return True
 
 # ------------------------------------------
@@ -82,8 +80,7 @@ def check_server():
             server_is_dead()
             return False
     else:
-        if OK_ACTIONS:
-            i.info("Server OK")
+        i.ok("Server")
         return True
 
 while True:

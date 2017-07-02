@@ -8,18 +8,27 @@ class Informer(object):
         msg_type = '%s>%s' % (level, self.module) if self.module else level
         return "[%s|%s] %s" % (msg_type, strftime("%d.%m|%H:%M:%S", localtime()), msg)
 
-    def info(self, msg):
-        msg = self._add_meta_info('INFO', msg)
+    @property
+    def _log_path(self):
+        base_path = '/root/watchdog/logs'
+        return '%s/%s.log' % (base_path, strftime("%m_%d", localtime()))
+
+    def log(self, msg):
         print(msg)
+        with open(self._log_path, 'a') as f:
+            f.write(msg + '\n')
+
+    def ok(self, what):
+        print(self._add_meta_info('INFO', what + ' works'))
+
+    def info(self, msg):
+        self.log(self._add_meta_info('INFO', msg))
 
     def notice(self, msg):
-        msg = self._add_meta_info('NOTICE', msg)
-        print(msg)
+        self.log(self._add_meta_info('NOTICE', msg))
 
     def warning(self, msg):
-        msg = self._add_meta_info('! WARNING', msg)
-        print(msg)
+        self.log(self._add_meta_info('! WARNING', msg))
 
     def crytical(self, msg):
-        msg = self._add_meta_info('!!! CRYTICAL', msg)
-        print(msg)
+        self.log(self._add_meta_info('!!! CRYTICAL', msg))

@@ -5,8 +5,9 @@ import subprocess
 
 class Omega2(object):
     def __init__(self):
-        self.version = self.get_omega_version()
-        self.led_path = "/sys/class/leds/%s:amber:system/" % self.version
+        led_name = self.get_led_name()
+        self.version = led_name.split(":")[0]
+        self.led_path = "/sys/class/leds/%s/" % led_name[:-1]
         self.RGB_pins = {'R': '17', 'G': '16', 'B': '15'}
 
         # https://docs.onion.io/omega2-docs/using-gpios.html#fast-gpio
@@ -14,15 +15,13 @@ class Omega2(object):
 
     def _shell(self, cmd_args, check_output=False):
         if check_output:
-            return str(subprocess.check_output(cmd_args, shell=True))
+            return str(subprocess.check_output(cmd_args))
         else:
-            return subprocess.call(" ".join(cmd_args), shell=True)
+            return subprocess.call(cmd_args)
 
-    @staticmethod
-    def get_omega_version():
-        """Returns 'omega2' for Omega2 and 'omega2p' for Omega2+"""
-        cmd = "uci get system.@led[0].sysfs"
-        return str(subprocess.check_output(cmd, shell=True)).split(":")[0]
+    def get_led_name(self):
+        """Returns the internal name of the onboard LED"""
+        return self._shell(['uci', 'get', 'system.@led[0].sysfs'], True)
 
     def led_control(self, state, delay_on=None, delay_off=None,
                     message=None, morse_speed=None):
@@ -56,49 +55,39 @@ class Omega2(object):
                     open(self.led_path + 'delay', 'w').write(morse_speed)
             return open(path, 'r').read()
 
-    def RGB_init(self):
-        """Configeure RGB LED pins as output"""
-        for _, pin in self.RGB_pins.items():
-            self.gpio_dir_out_1(pin)
-
     def RGB_color(self, red, green, blue):
-        """Set color of RGB LED on Expansion Baord"""
-        def s(color, val):
-            if val >= 100: self.gpio_set(self.RGB_pins[color], 0)
-            if val <= 0: self.gpio_set(self.RGB_pins[color], 1)
-            if 0 < val < 100: self.gpio_pwm(self.RGB_pins[color], 100-val)
-        s('R', red)
-        s('G', green)
-        s('B', blue)
+        """Set color of RGB LED on Expansion Baord. Color from 0 to 255"""
+        hex_color = "0x{:02x}{:02x}{:02x}".format(red, green, blue)
+        return not self._shell(['expled', hex_color])
 
     def gpio_dir_in(self, pin):
-        """Set pin direction to INPUT and don't care about logical level"""
+        """Set pin direction to INPUT and don't care about logical level."""
         method = 'dirin' if self._gpio_tool == 'gpioctl' else 'set-input'
         return not self._shell([self._gpio_tool, method, str(pin)])
 
     def gpio_dir_in_0(self, pin):
-        """Set pin direction to INPUT and keep LOW logical level"""
+        """Set pin direction to INPUT and keep LOW logical level."""
         return not self._shell(["gpioctl", "dirin-low", str(pin)])
 
     def gpio_dir_in_1(self, pin):
-        """Set pin direction to INPUT and keep HIGH logical level"""
+        """Set pin direction to INPUT and keep HIGH logical level."""
         return not self._shell("gpioctl", "dirin-high" + str(pin))
 
     def gpio_dir_out(self, pin):
-        """Set pin direction to OUTPUT and don't care about logical level"""
+        """Set pin direction to OUTPUT and don't care about logical level."""
         method = 'dirout' if self._gpio_tool == 'gpioctl' else 'set-output'
         return not self._shell([self._gpio_tool, method, str(pin)])
 
     def gpio_dir_out_0(self, pin):
-        """Set pin direction to OUTPUT and keep LOW logical level"""
+        """Set pin direction to OUTPUT and keep LOW logical level."""
         return not self._shell(["gpioctl", "dirout-low", str(pin)])
 
     def gpio_dir_out_1(self, pin):
-        """Set pin direction to OUTPUT and keep HIGH logical level"""
+        """Set pin direction to OUTPUT and keep HIGH logical level."""
         return not self._shell(["gpioctl", "dirout-high", str(pin)])
 
     def gpio_get(self, pin):
-        """Get the logical level on the pin"""
+        """Get the logical level on the pin."""
         method = 'get' if self._gpio_tool == 'gpioctl' else 'read'
         output = self._shell([self._gpio_tool, method, str(pin)], True)
 
@@ -112,7 +101,7 @@ class Omega2(object):
                 return None
 
     def gpio_set(self, pin, value):
-        """Set the pin's logical level to value"""
+        """Set the pin's logical level to value."""
         if self._gpio_tool == 'gpioctl':
             arg1, arg2 = 'set' if value else 'clear', str(pin)
             command = [self._gpio_tool, arg1, arg2]
@@ -121,7 +110,11 @@ class Omega2(object):
             command = [self._gpio_tool, method, arg1, arg2]
         return not self._shell(command)
 
-    def gpio_pwm(self, pin, duty_cycle_percent):
-        """Sends PWM on a pin"""
-        return not self._shell(['fast-gpio', 'pwm', str(pin), '1000',
-                                str(duty_cycle_percent)])
+    def gpio_pwm(self, pin, freq, duty_cycle_percent=None):
+        """Sends PWM on a pin. Pass None to turn off."""
+        if freq:
+            return not self._shell(['fast-gpio', 'pwm',
+                                    str(pin), str(freq),
+                                    str(duty_cycle_percent)])
+        else:
+            return not self._shell(['fast-gpio', 'set', str(pin), '0'])
