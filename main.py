@@ -6,7 +6,7 @@ from router import Router
 from server import Server
 from tester import Tester
 
-FULL_CHECK_INTERVAL = 60 * 30  # seconds
+FULL_CHECK_INTERVAL = 60 * 10  # seconds
 
 i = Informer()
 i.info('Lock and Load!')

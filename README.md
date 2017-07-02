@@ -1,4 +1,4 @@
-# Omega2 Watchdog
+# Omega2 Rebooter
 My humble attempts to automatically reboot my router and server in case of errors
 
 Hardware:
