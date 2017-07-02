@@ -1,8 +1,13 @@
 from time import localtime, strftime
+import os
 
 class Informer(object):
+    logs_dir = './logs'
+
     def __init__(self, module=''):
         self.module = module
+        if not os.path.exists(self.logs_dir):
+            os.makedirs(self.logs_dir)
 
     def _add_meta_info(self, level, msg):
         msg_type = '%s>%s' % (level, self.module) if self.module else level
@@ -10,8 +15,7 @@ class Informer(object):
 
     @property
     def _log_path(self):
-        base_path = '/root/watchdog/logs'
-        return '%s/%s.log' % (base_path, strftime("%m_%d", localtime()))
+        return os.path.join(self.logs_dir, '%s.log' % strftime("%m_%d", localtime()))
 
     def log(self, msg):
         print(msg)
