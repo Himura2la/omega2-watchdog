@@ -2,7 +2,7 @@ from time import localtime, strftime
 import os
 
 class Informer(object):
-    logs_dir = './logs'
+    logs_dir = '/root/watchdog/logs'
 
     def __init__(self, module=''):
         self.module = module
