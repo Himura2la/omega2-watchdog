@@ -6,7 +6,7 @@ from router import Router
 from server import Server
 from tester import Tester
 
-FULL_CHECK_INTERVAL = 60 * 10  # seconds
+FULL_CHECK_INTERVAL = 60 * 20  # seconds
 
 i = Informer()
 i.info('Lock and Load!')
@@ -63,7 +63,8 @@ def server_warning():
     i.notice("Server's connection fails. Waiting 1m.")
     time.sleep(60)
     i.notice("Maybe router is dead? Checking this.")
-    check_router()
+    router_status = check_router()
+    i.notice("Router checking result: " + str(router_status))
 
 def server_is_dead():
     i.warning("Server's connection still fails. Trying to reboot.")
@@ -79,6 +80,8 @@ def check_server():
         if not t.remote_ping("8.8.8.8", 10):
             server_is_dead()
             return False
+        else:
+            i.notice("Server raised by itself.")
     else:
         i.ok("Server")
         return True
