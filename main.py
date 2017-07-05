@@ -1,3 +1,6 @@
+#!python
+# -*- coding: utf-8 -*-
+
 import subprocess
 import time
 import omega2
