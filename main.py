@@ -24,20 +24,20 @@ def wifi_reconnect():
     time.sleep(5)
 
 def router_notice():
-    i.notice("Router's connection failed once. Waiting 30s...")
+    i.notice("(⚆_⚆) Link failed once. Waiting 30s...")
     o2.RGB_color(0, 0, 100)
     time.sleep(30)
     wifi_reconnect()
 
 def router_warning():
-    i.notice("Router's connection failed twice. Waiting 2m...")
+    i.notice("(¬_¬) Link failed twice. Waiting 2m...")
     o2.RGB_color(100, 1, 0) # Yellow
     time.sleep(60 * 2)
     wifi_reconnect()
 
 def router_is_dead():
     o2.RGB_color(100, 0, 0)
-    i.warning("Connection is Dead. Trying to reboot...")
+    i.warning("(╯°□°）╯ Link is Dead. Rebooting router.")
     if not r.soft_reboot():
         i.warning("Soft reboot failed!")
         r.hard_reboot()
@@ -53,6 +53,10 @@ def check_router():
             if not t.ping("8.8.8.8", 10):
                 router_is_dead()
                 return False
+            else:
+                i.notice("\(•◡•)/ Link raised by itself.")
+        else:
+            i.notice("\(•◡•)/ Link raised by itself.")
     i.ok("Router")
     o2.RGB_color(0, 0, 0)
     return True
@@ -60,19 +64,19 @@ def check_router():
 # ------------------------------------------
 
 def server_warning():
-    i.notice("Server's connection fails. Waiting 1m.")
+    i.notice("(⚆_⚆) Server's connection fails. Waiting 1m.")
     time.sleep(60)
-    i.notice("Maybe router is dead? Checking this.")
+    i.notice("┴─┴ノ( º _ ºノ) Maybe router is dead? Checking this.")
     router_status = check_router()
     i.notice("Router checking result: " + str(router_status))
 
 def server_is_dead():
-    i.warning("Server's connection still fails. Trying to reboot.")
+    i.warning("(╯°□°）╯ Server is Dead. Rebooting.")
     if s.soft_reboot():
         i.warning("Waiting 3m for server to reboot...")
         time.sleep(60 * 3)
     else:
-        i.crytical("Server is badly dead and needs a hard reset... Giving up.")
+        i.crytical("¯\_(ツ)_/¯ Failed ro reboot. Giving up.")
 
 def check_server():
     if not t.remote_ping("ya.ru", 3):
@@ -81,7 +85,7 @@ def check_server():
             server_is_dead()
             return False
         else:
-            i.notice("Server raised by itself.")
+            i.notice("\(•◡•)/ Server raised by itself.")
     else:
         i.ok("Server")
         return True
