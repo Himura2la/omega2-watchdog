@@ -41,11 +41,11 @@ def router_warning():
 
 def router_is_dead():
     o2.RGB_color(100, 0, 0)
-    i.crytical("(ﾉ°□°)ﾉ Link is Dead. Rebooting router.")
+    i.crytical("(ﾉ°□°)ﾉ Link is Dead. Rebooting Router.")
     if not r.soft_reboot():
         i.warning("Soft reboot failed!")
         r.hard_reboot()
-    i.warning("Waiting 1m for router to reboot...")
+    i.warning("Waiting 1m for Router to reboot...")
     time.sleep(60)
     wifi_reconnect()
     
@@ -76,9 +76,13 @@ def check_router():
 def server_warning():
     i.notice("(¬_¬) Server's connection fails. Waiting 1m.")
     time.sleep(60)
-    i.notice("┴─┴ ノ( º _ ºノ) Maybe router is dead? Checking this.")
-    router_status = check_router()
-    i.notice("Router checking result: " + str(router_status))
+    i.notice("┴─┴ ノ( º _ ºノ) Maybe Router is dead? Checking this.")
+    if t.ping("ya.ru", 3):
+        i.notice("No, Router is OK... Is server really dead?")
+    else:
+        i.notice("Indeed! Router is the one to blame. Recovering sequence initiated.")
+        result = "Online ^_^" if check_router() else "Still dead Т_Т"
+        i.notice("Recovering sequence finished. Link status: " + result)
 
 def server_is_dead():
     i.crytical("(ﾉ°□°)ﾉ Server is Dead. Rebooting.")
