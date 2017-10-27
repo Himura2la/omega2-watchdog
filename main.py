@@ -8,6 +8,7 @@ from informer import Informer
 from router import Router
 from server import Server
 from tester import Tester
+from ddns import DDNS
 
 FULL_CHECK_INTERVAL = 60 * 20  # seconds
 
@@ -18,6 +19,7 @@ o2 = omega2.Omega2()
 r = Router('192.168.1.1', 1, lambda: open('/root/router_pwd').read())
 s = Server("/root/server-run")
 t = Tester(s)
+d = DDNS()
 
 o2.RGB_color(0, 0, 0)
 
@@ -65,8 +67,10 @@ def check_router():
                 return False
             else:
                 i.notice("\(‘ ∇‘ )/ Link raised by itself.")
+                d.update()
         else:
             i.notice("\(‘ ∇‘ )/ Link raised by itself.")
+            d.update()
     i.ok("Router")
     o2.RGB_color(0, 0, 0)
     return True
@@ -106,7 +110,6 @@ def check_server():
         return True
 
 while True:
-    time.sleep(FULL_CHECK_INTERVAL // 2)
-    if check_router():
-        time.sleep(FULL_CHECK_INTERVAL // 2)
-        check_server()
+    check_router()
+    d.update()
+    time.sleep(FULL_CHECK_INTERVAL)
